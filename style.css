@@ -38,6 +38,7 @@
         font-size : 18px;
         font-family: Verdana, Helvetica, sans-serif;
         padding-right : 210px;
+	border-style: inset;
         }
         
         body {
@@ -116,13 +117,5 @@
         border-radius:40px;
         }
 
-	code {
-       
-        font-size : 18px;
-        font-family: Verdana, Helvetica, sans-serif;
-        padding-right : 210px;
-	border-style: inset;
-	border-color : MediumSeaGreen;
-        }
-
+	
 	
