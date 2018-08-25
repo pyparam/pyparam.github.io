@@ -121,16 +121,8 @@
         font-size : 18px;
         font-family: Verdana, Helvetica, sans-serif;
         padding-right : 210px;
-        }
-        
-        body {
-        background-color: white;
-        padding-left : 140px;
-        }
-         a.link{
-        color : MediumSeaGreen;
-        font-size : 15px;
-        text-decoration: none;
+	border-style: inset;
+	border-color : MediumSeaGreen;
         }
 
 	
