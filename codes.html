@@ -19,92 +19,184 @@
         	</ul>
 		</nav>
 <h1>Applying Periodic boundary conditions in 2D rectangle shape RVE in Abaqus/CAE using Python</h1>
-<code class ="inset">############################################################################
-#Constraints for Periodic Boundary Conditions 
-# Note::: Do not modify it :
-# PBC Constraints is generalised for any size of rve 
-# You can change the model name : Model-1 to whatever the name of your model and same apply for Instance, 	
-#########################################
-modelkey ='Model-1-2-1'
-instancekey = mdb.models[modelkey].rootAssembly.instances.keys()[0]
-F=mdb.models[modelkey].rootAssembly.instances[instancekey].nodes
-cornsetlist,setlabel=['Bottemleft','Bottemright','Topright','Topleft'],['setlabelH','consH','setlabelV','consV','corn','U','V']
-a,noj  = getInput('length of RVE (x - coordinates)'),0
-b = getInput('height of RVE (y - coordinates)')
-a= float(a)
-b = float(b)
-for i in range(len(F)):
-  coor=F[i].coordinates
-  column = [0,a,b]
-  for k in column:
-	if coor[0]==k:
-		for m in column:
-			if coor[1]==m:
-			   #print(str(F[i].coordinates))
-			   cornseti=setlabel[4]+str(F[i].label)
-			   setsi=mdb.models[modelkey].rootAssembly.Set(cornseti, F[i:i+1])
-			   if coor[0]==0.0 and coor[1]==0.0:
-					cornsetlist[0]=cornseti
-			   elif coor[0]==a and coor[1]==0.0:
-					cornsetlist[1]=cornseti
-			   elif coor[0]==a and coor[1]==b:
-					cornsetlist[2]=cornseti
-			   elif coor[0]==0.0 and coor[1]==b:
-					cornsetlist[3]=cornseti
-if noj==0:
-   mdb.models[modelkey].Equation('corneq1',([1,cornsetlist[2],1],[-1,cornsetlist[1],1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
-   mdb.models[modelkey].Equation('corneq2',([1,cornsetlist[3],2],[-1,cornsetlist[0],2],[-1,cornsetlist[2],2],[1,cornsetlist[1],2]))
-if noj==1:
-   mdb.models[modelkey].Equation('corneq1',([1,cornsetlist[1],1],[-1,cornsetlist[2],1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
-   mdb.models[modelkey].Equation('corneq2',([1,cornsetlist[2],2],[-1,cornsetlist[1],2],[-1,cornsetlist[3],2],[1,cornsetlist[0],2]))
-if noj==2:
-  mdb.models[modelkey].Equation('corneq1',([1,cornsetlist[2],1],[-1,cornsetlist[1],1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
-  mdb.models[modelkey].Equation('corneq2',([1,cornsetlist[2],2],[-1,cornsetlist[1],2],[-1,cornsetlist[3],2],[1,cornsetlist[0],2]))
-column = [0,a,b]
-l1,l2,l3,l4=[],[],[],[] ###l1,l2,l3,l4 is list of node index position which situated at Bottem, Top, Right and Left respectively.
-for i in range(len(F)):
-	coor=F[i].coordinates
-	if coor[1]==0:
-		if coor[0]!=0 and coor[0]!=a:
-			l2.append(i);
-	if coor[1]==b:
-		if coor[0]!=0 and coor[0]!=a:
-			l1.append(i);
-	if coor[0]==0:
-		if coor[1]!=0 and coor[1]!=b:
-			l4.append(i);
-	if coor[0]==a:
-		if coor[1]!=0 and coor[1]!=b:
-			l3.append(i);
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;border:solid green;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">############################################################################</span>
+<span style="color: #0099FF; font-style: italic">#Constraints for Periodic Boundary Conditions </span>
+<span style="color: #0099FF; font-style: italic"># Created by: Paramveer Sharma</span>
+<span style="color: #0099FF; font-style: italic"># MS, Aerospace Engineering</span>
+<span style="color: #0099FF; font-style: italic"># Indian Institute of Technology Madras</span>
+<span style="color: #0099FF; font-style: italic"># PBC Constraints is generalised for any size of rve </span>
+<span style="color: #0099FF; font-style: italic"># You can change the model name : Model-1 to whatever the name of your model and same apply for Instance, 	</span>
+<span style="color: #0099FF; font-style: italic">#########################################</span>
+modelkey <span style="color: #555555">=</span><span style="color: #CC3300">&#39;Model-1-2-1&#39;</span>
+instancekey <span style="color: #555555">=</span> mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>instances<span style="color: #555555">.</span>keys()[<span style="color: #FF6600">0</span>]
+F<span style="color: #555555">=</span>mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>instances[instancekey]<span style="color: #555555">.</span>nodes
+cornsetlist,setlabel<span style="color: #555555">=</span>[<span style="color: #CC3300">&#39;Bottemleft&#39;</span>,<span style="color: #CC3300">&#39;Bottemright&#39;</span>,<span style="color: #CC3300">&#39;Topright&#39;</span>,<span style="color: #CC3300">&#39;Topleft&#39;</span>],[<span style="color: #CC3300">&#39;setlabelH&#39;</span>,<span style="color: #CC3300">&#39;consH&#39;</span>,<span style="color: #CC3300">&#39;setlabelV&#39;</span>,<span style="color: #CC3300">&#39;consV&#39;</span>,<span style="color: #CC3300">&#39;corn&#39;</span>,<span style="color: #CC3300">&#39;U&#39;</span>,<span style="color: #CC3300">&#39;V&#39;</span>]
+a,noj  <span style="color: #555555">=</span> getInput(<span style="color: #CC3300">&#39;length of RVE (x - coordinates)&#39;</span>),<span style="color: #FF6600">0</span>
+b <span style="color: #555555">=</span> getInput(<span style="color: #CC3300">&#39;height of RVE (y - coordinates)&#39;</span>)
+a<span style="color: #555555">=</span> <span style="color: #336666">float</span>(a)
+b <span style="color: #555555">=</span> <span style="color: #336666">float</span>(b)
+<span style="color: #006699; font-weight: bold">for</span> i <span style="color: #000000; font-weight: bold">in</span> <span style="color: #336666">range</span>(<span style="color: #336666">len</span>(F)):
+  coor<span style="color: #555555">=</span>F[i]<span style="color: #555555">.</span>coordinates
+  column <span style="color: #555555">=</span> [<span style="color: #FF6600">0</span>,a,b]
+  <span style="color: #006699; font-weight: bold">for</span> k <span style="color: #000000; font-weight: bold">in</span> column:
+	<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span>k:
+		<span style="color: #006699; font-weight: bold">for</span> m <span style="color: #000000; font-weight: bold">in</span> column:
+			<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span>m:
+			   <span style="color: #0099FF; font-style: italic">#print(str(F[i].coordinates))</span>
+			   cornseti<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">4</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[i]<span style="color: #555555">.</span>label)
+			   setsi<span style="color: #555555">=</span>mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>Set(cornseti, F[i:i<span style="color: #555555">+</span><span style="color: #FF6600">1</span>])
+			   <span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span><span style="color: #FF6600">0.0</span> <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span><span style="color: #FF6600">0.0</span>:
+					cornsetlist[<span style="color: #FF6600">0</span>]<span style="color: #555555">=</span>cornseti
+			   <span style="color: #006699; font-weight: bold">elif</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span>a <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span><span style="color: #FF6600">0.0</span>:
+					cornsetlist[<span style="color: #FF6600">1</span>]<span style="color: #555555">=</span>cornseti
+			   <span style="color: #006699; font-weight: bold">elif</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span>a <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span>b:
+					cornsetlist[<span style="color: #FF6600">2</span>]<span style="color: #555555">=</span>cornseti
+			   <span style="color: #006699; font-weight: bold">elif</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span><span style="color: #FF6600">0.0</span> <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span>b:
+					cornsetlist[<span style="color: #FF6600">3</span>]<span style="color: #555555">=</span>cornseti
+<span style="color: #006699; font-weight: bold">if</span> noj<span style="color: #555555">==</span><span style="color: #FF6600">0</span>:
+   mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(<span style="color: #CC3300">&#39;corneq1&#39;</span>,([<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">2</span>],<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">1</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">1</span>]))
+   mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(<span style="color: #CC3300">&#39;corneq2&#39;</span>,([<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">2</span>],<span style="color: #FF6600">2</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">2</span>]))
+<span style="color: #006699; font-weight: bold">if</span> noj<span style="color: #555555">==</span><span style="color: #FF6600">1</span>:
+   mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(<span style="color: #CC3300">&#39;corneq1&#39;</span>,([<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">2</span>],<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">1</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">1</span>]))
+   mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(<span style="color: #CC3300">&#39;corneq2&#39;</span>,([<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">2</span>],<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">2</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">2</span>]))
+<span style="color: #006699; font-weight: bold">if</span> noj<span style="color: #555555">==</span><span style="color: #FF6600">2</span>:
+  mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(<span style="color: #CC3300">&#39;corneq1&#39;</span>,([<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">2</span>],<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">1</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">1</span>]))
+  mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(<span style="color: #CC3300">&#39;corneq2&#39;</span>,([<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">2</span>],<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">2</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">2</span>]))
+column <span style="color: #555555">=</span> [<span style="color: #FF6600">0</span>,a,b]
+l1,l2,l3,l4<span style="color: #555555">=</span>[],[],[],[] <span style="color: #0099FF; font-style: italic">###l1,l2,l3,l4 is list of node index position which situated at Bottem, Top, Right and Left respectively.</span>
+<span style="color: #006699; font-weight: bold">for</span> i <span style="color: #000000; font-weight: bold">in</span> <span style="color: #336666">range</span>(<span style="color: #336666">len</span>(F)):
+	coor<span style="color: #555555">=</span>F[i]<span style="color: #555555">.</span>coordinates
+	<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span><span style="color: #FF6600">0</span>:
+		<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">!=</span><span style="color: #FF6600">0</span> <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">!=</span>a:
+			l2<span style="color: #555555">.</span>append(i);
+	<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">==</span>b:
+		<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">!=</span><span style="color: #FF6600">0</span> <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">!=</span>a:
+			l1<span style="color: #555555">.</span>append(i);
+	<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span><span style="color: #FF6600">0</span>:
+		<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">!=</span><span style="color: #FF6600">0</span> <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">!=</span>b:
+			l4<span style="color: #555555">.</span>append(i);
+	<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">0</span>]<span style="color: #555555">==</span>a:
+		<span style="color: #006699; font-weight: bold">if</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">!=</span><span style="color: #FF6600">0</span> <span style="color: #000000; font-weight: bold">and</span> coor[<span style="color: #FF6600">1</span>]<span style="color: #555555">!=</span>b:
+			l3<span style="color: #555555">.</span>append(i);
 
-for i in range(len(l1)):
-	coor1=F[l1[i]].coordinates
-	for j in range(len(l2)):
-		coor2=F[l2[j]].coordinates
-		if coor1[0] == coor2[0]:
-			setlabeli=setlabel[0]+str(F[l1[i]].label)
-			setlabelj=setlabel[0]+str(F[l2[j]].label)
-			cequation1=setlabel[1]+str(F[l1[i]].label)+setlabel[5]+str(F[l2[j]].label)
-			cequation2=setlabel[1]+str(F[l1[i]].label)+setlabel[6]+str(F[l2[j]].label)
-			setsi=mdb.models[modelkey].rootAssembly.Set(setlabeli, F[l1[i]:l1[i]+1])
-			setsj=mdb.models[modelkey].rootAssembly.Set(setlabelj, F[l2[j]:l2[j]+1])
-			mdb.models[modelkey].Equation(cequation1,([1,setlabeli,1],[-1,setlabelj,1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
-			mdb.models[modelkey].Equation(cequation2,([1,setlabeli,2],[-1,setlabelj,2],[-1,cornsetlist[3],2],[1,cornsetlist[0],2]))				
-for i in range(len(l3)):
-	coor1=F[l3[i]].coordinates
-	for j in range(len(l4)):
-		coor2=F[l4[j]].coordinates
-		if coor1[1] == coor2[1]:
-			setlabeli=setlabel[2]+str(F[l3[i]].label)
-			setlabelj=setlabel[2]+str(F[l4[j]].label)
-			cequation1=setlabel[3]+str(F[l3[i]].label)+setlabel[5]+str(F[l4[j]].label)
-			cequation2=setlabel[3]+str(F[l3[i]].label)+setlabel[6]+str(F[l4[j]].label)
-			setsi=mdb.models[modelkey].rootAssembly.Set(setlabeli, F[l3[i]:l3[i]+1])
-			setsj=mdb.models[modelkey].rootAssembly.Set(setlabelj, F[l4[j]:l4[j]+1])
-			mdb.models[modelkey].Equation(cequation1,([1,setlabeli,1],[-1,setlabelj,1],[-1,cornsetlist[1],1],[1,cornsetlist[0],1]))
-			mdb.models[modelkey].Equation(cequation2,([1,setlabeli,2],[-1,setlabelj,2],[-1,cornsetlist[1],2],[1,cornsetlist[0],2]))
-####################################################################
-#PBC Constraints end
-################################################################### </samp>
+<span style="color: #006699; font-weight: bold">for</span> i <span style="color: #000000; font-weight: bold">in</span> <span style="color: #336666">range</span>(<span style="color: #336666">len</span>(l1)):
+	coor1<span style="color: #555555">=</span>F[l1[i]]<span style="color: #555555">.</span>coordinates
+	<span style="color: #006699; font-weight: bold">for</span> j <span style="color: #000000; font-weight: bold">in</span> <span style="color: #336666">range</span>(<span style="color: #336666">len</span>(l2)):
+		coor2<span style="color: #555555">=</span>F[l2[j]]<span style="color: #555555">.</span>coordinates
+		<span style="color: #006699; font-weight: bold">if</span> coor1[<span style="color: #FF6600">0</span>] <span style="color: #555555">==</span> coor2[<span style="color: #FF6600">0</span>]:
+			setlabeli<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">0</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l1[i]]<span style="color: #555555">.</span>label)
+			setlabelj<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">0</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l2[j]]<span style="color: #555555">.</span>label)
+			cequation1<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">1</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l1[i]]<span style="color: #555555">.</span>label)<span style="color: #555555">+</span>setlabel[<span style="color: #FF6600">5</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l2[j]]<span style="color: #555555">.</span>label)
+			cequation2<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">1</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l1[i]]<span style="color: #555555">.</span>label)<span style="color: #555555">+</span>setlabel[<span style="color: #FF6600">6</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l2[j]]<span style="color: #555555">.</span>label)
+			setsi<span style="color: #555555">=</span>mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>Set(setlabeli, F[l1[i]:l1[i]<span style="color: #555555">+</span><span style="color: #FF6600">1</span>])
+			setsj<span style="color: #555555">=</span>mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>Set(setlabelj, F[l2[j]:l2[j]<span style="color: #555555">+</span><span style="color: #FF6600">1</span>])
+			mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(cequation1,([<span style="color: #FF6600">1</span>,setlabeli,<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,setlabelj,<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">1</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">1</span>]))
+			mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(cequation2,([<span style="color: #FF6600">1</span>,setlabeli,<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,setlabelj,<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">3</span>],<span style="color: #FF6600">2</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">2</span>]))				
+<span style="color: #006699; font-weight: bold">for</span> i <span style="color: #000000; font-weight: bold">in</span> <span style="color: #336666">range</span>(<span style="color: #336666">len</span>(l3)):
+	coor1<span style="color: #555555">=</span>F[l3[i]]<span style="color: #555555">.</span>coordinates
+	<span style="color: #006699; font-weight: bold">for</span> j <span style="color: #000000; font-weight: bold">in</span> <span style="color: #336666">range</span>(<span style="color: #336666">len</span>(l4)):
+		coor2<span style="color: #555555">=</span>F[l4[j]]<span style="color: #555555">.</span>coordinates
+		<span style="color: #006699; font-weight: bold">if</span> coor1[<span style="color: #FF6600">1</span>] <span style="color: #555555">==</span> coor2[<span style="color: #FF6600">1</span>]:
+			setlabeli<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">2</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l3[i]]<span style="color: #555555">.</span>label)
+			setlabelj<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">2</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l4[j]]<span style="color: #555555">.</span>label)
+			cequation1<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">3</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l3[i]]<span style="color: #555555">.</span>label)<span style="color: #555555">+</span>setlabel[<span style="color: #FF6600">5</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l4[j]]<span style="color: #555555">.</span>label)
+			cequation2<span style="color: #555555">=</span>setlabel[<span style="color: #FF6600">3</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l3[i]]<span style="color: #555555">.</span>label)<span style="color: #555555">+</span>setlabel[<span style="color: #FF6600">6</span>]<span style="color: #555555">+</span><span style="color: #336666">str</span>(F[l4[j]]<span style="color: #555555">.</span>label)
+			setsi<span style="color: #555555">=</span>mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>Set(setlabeli, F[l3[i]:l3[i]<span style="color: #555555">+</span><span style="color: #FF6600">1</span>])
+			setsj<span style="color: #555555">=</span>mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>rootAssembly<span style="color: #555555">.</span>Set(setlabelj, F[l4[j]:l4[j]<span style="color: #555555">+</span><span style="color: #FF6600">1</span>])
+			mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(cequation1,([<span style="color: #FF6600">1</span>,setlabeli,<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,setlabelj,<span style="color: #FF6600">1</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">1</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">1</span>]))
+			mdb<span style="color: #555555">.</span>models[modelkey]<span style="color: #555555">.</span>Equation(cequation2,([<span style="color: #FF6600">1</span>,setlabeli,<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,setlabelj,<span style="color: #FF6600">2</span>],[<span style="color: #555555">-</span><span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">1</span>],<span style="color: #FF6600">2</span>],[<span style="color: #FF6600">1</span>,cornsetlist[<span style="color: #FF6600">0</span>],<span style="color: #FF6600">2</span>]))
+<span style="color: #0099FF; font-style: italic">####################################################################</span>
+<span style="color: #0099FF; font-style: italic">#PBC Constraints end</span>
+<span style="color: #0099FF; font-style: italic">###################################################################</span>
+</pre></td></tr></table></div>
+
 
 <p >For a time being you may want to take a look on some of mine Github repositories</p> 
