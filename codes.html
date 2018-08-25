@@ -219,6 +219,168 @@ l1,l2,l3,l4<span style="color: #666666">=</span>[],[],[],[] <span style="color: 
 </pre></td></tr></table></div>
 <button class="btn"><i class="fa fa-download"></i> Download This Script</button>
 
+<h1>Extracting the nodel point information such as node label, X-Y Coordinates and Jacobian in Abaqus/CAE using Python</h1><br>
+		<br>
+<p> This script can be use to extract the nodel point information such as node label, nodes X-Y coordinates <br>
+	jacobian of isoparametric transformation into the text file<\p>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:scroll;width:800px;height:600px;border:solid green;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-style: italic">#_________________________________________________________</span>
+<span style="color: #008800; font-style: italic">#_____ Script for finding the nodal connectivity in abaqus</span>
+<span style="color: #008800; font-style: italic">#_________________________________________________________ </span>
+
+<span style="color: #008800; font-style: italic"># Paramveer Sharma</span>
+<span style="color: #008800; font-style: italic"># MS, Aerospace Engineering</span>
+<span style="color: #008800; font-style: italic"># Indian Institute of Technology Madras</span>
+<span style="color: #008800; font-style: italic"># http://pyparam.github.io </span>
+<span style="color: #008800; font-style: italic"># Email: paramveersharma9@gmail.com</span>
+
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">part</span>
+<span style="color: #AA22FF; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">numpy</span> <span style="color: #AA22FF; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">np</span> 
+
+<span style="color: #AA22FF; font-weight: bold">for</span> ii <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #AA22FF">range</span>(<span style="color: #666666">4</span>):
+	liststring <span style="color: #666666">=</span> [<span style="color: #BB4444">&#39;Glabel&#39;</span>, <span style="color: #BB4444">&#39;XCoor&#39;</span>,<span style="color: #BB4444">&#39;YCoor&#39;</span>, <span style="color: #BB4444">&#39;Jacobian&#39;</span>]
+	<span style="color: #AA22FF">file</span> <span style="color: #666666">=</span> <span style="color: #AA22FF">open</span>(<span style="color: #BB4444">&#39;/home/paramveer/&#39;</span><span style="color: #666666">+</span>liststring[ii]<span style="color: #666666">+</span><span style="color: #BB4444">&#39;.txt&#39;</span>,<span style="color: #BB4444">&#39;w+&#39;</span>) <span style="color: #008800; font-style: italic"># path and filename you want to generate</span>
+	elemArr <span style="color: #666666">=</span> mdb<span style="color: #666666">.</span>models[<span style="color: #BB4444">&#39;Model-1-2-1&#39;</span>]<span style="color: #666666">.</span>parts[<span style="color: #BB4444">&#39;Part-1&#39;</span>]<span style="color: #666666">.</span>sets[<span style="color: #BB4444">&#39;setsection2&#39;</span>]<span style="color: #666666">.</span>elements <span style="color: #008800; font-style: italic"># pick the part you want to analyse</span>
+	<span style="color: #AA22FF">len</span>(elemArr)
+	<span style="color: #AA22FF; font-weight: bold">print</span> <span style="color: #AA22FF">len</span>(elemArr)
+	counter <span style="color: #666666">=</span> <span style="color: #666666">0</span>	  
+	<span style="color: #AA22FF; font-weight: bold">for</span> e <span style="color: #AA22FF; font-weight: bold">in</span> elemArr:
+		ktuple <span style="color: #666666">=</span> e<span style="color: #666666">.</span>getNodes()
+		length <span style="color: #666666">=</span> <span style="color: #AA22FF">len</span>(ktuple)
+		elabel <span style="color: #666666">=</span> e<span style="color: #666666">.</span>label
+		counter <span style="color: #666666">=</span> counter <span style="color: #666666">+1</span>
+		<span style="color: #AA22FF; font-weight: bold">if</span> length <span style="color: #666666">==4</span>:
+			
+			klabel1 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>label
+			kcoor1 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>coordinates
+	
+			klabel2 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">1</span>]<span style="color: #666666">.</span>label
+			kcoor2 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">1</span>]<span style="color: #666666">.</span>coordinates
+	
+			klabel3 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">2</span>]<span style="color: #666666">.</span>label
+			kcoor3 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">2</span>]<span style="color: #666666">.</span>coordinates
+	
+			klabel4 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">3</span>]<span style="color: #666666">.</span>label
+			kcoor4 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">3</span>]<span style="color: #666666">.</span>coordinates
+			
+	                s, t<span style="color: #666666">=</span> <span style="color: #666666">0</span> , <span style="color: #666666">0</span>
+			X <span style="color: #666666">=</span> np<span style="color: #666666">.</span>array([[kcoor1[<span style="color: #666666">0</span>], kcoor2[<span style="color: #666666">0</span>], kcoor3[<span style="color: #666666">0</span>], kcoor4[<span style="color: #666666">0</span>]]])
+			Y <span style="color: #666666">=</span> np<span style="color: #666666">.</span>transpose([[kcoor1[<span style="color: #666666">1</span>],kcoor2[<span style="color: #666666">1</span>],kcoor3[<span style="color: #666666">1</span>],kcoor4[<span style="color: #666666">1</span>]]])
+			guass_x <span style="color: #666666">=</span> (kcoor1[<span style="color: #666666">0</span>] <span style="color: #666666">+</span> kcoor2[<span style="color: #666666">0</span>] <span style="color: #666666">+</span>kcoor3[<span style="color: #666666">0</span>] <span style="color: #666666">+</span> kcoor4[<span style="color: #666666">0</span>])<span style="color: #666666">/4.0</span>
+			guass_y <span style="color: #666666">=</span> (kcoor1[<span style="color: #666666">1</span>] <span style="color: #666666">+</span> kcoor2[<span style="color: #666666">1</span>] <span style="color: #666666">+</span>kcoor3[<span style="color: #666666">1</span>] <span style="color: #666666">+</span> kcoor4[<span style="color: #666666">1</span>])<span style="color: #666666">/4.0</span>
+	
+			r1 , r2 <span style="color: #666666">=</span> [<span style="color: #666666">0</span>, <span style="color: #666666">1-</span>t, t<span style="color: #666666">-</span>s, s<span style="color: #666666">-1</span>], [t<span style="color: #666666">-1</span>, <span style="color: #666666">0</span> , s<span style="color: #666666">+1</span>, <span style="color: #666666">-</span>s<span style="color: #666666">-</span>t]
+			r3 , r4 <span style="color: #666666">=</span>  [s<span style="color: #666666">-</span>t, <span style="color: #666666">-</span>s<span style="color: #666666">-1</span>, <span style="color: #666666">0</span>, t<span style="color: #666666">+1</span>], [<span style="color: #666666">1-</span>s, s<span style="color: #666666">+</span>t, <span style="color: #666666">-</span>t<span style="color: #666666">-1</span>, <span style="color: #666666">0</span>]
+			isomatrix <span style="color: #666666">=</span> np<span style="color: #666666">.</span>array([r1,r2,r3,r4])
+	
+			temp <span style="color: #666666">=</span> X<span style="color: #666666">.</span>dot(isomatrix)
+			jacobian <span style="color: #666666">=</span> (<span style="color: #666666">1.0/8.0</span>)<span style="color: #666666">*</span>(temp<span style="color: #666666">.</span>dot(Y))
+			area <span style="color: #666666">=</span> (<span style="color: #666666">1.0/2.0</span>)<span style="color: #666666">*</span>(kcoor1[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor2[<span style="color: #666666">1</span>]<span style="color: #666666">+</span>kcoor2[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor3[<span style="color: #666666">1</span>]<span style="color: #666666">+</span>kcoor3[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor4[<span style="color: #666666">1</span>]<span style="color: #666666">+</span>kcoor4[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor1[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor2[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor1[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor3[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor2[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor4[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor3[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor1[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor4[<span style="color: #666666">1</span>])
+			<span style="color: #AA22FF; font-weight: bold">if</span> area<span style="color: #666666">&lt;0.0</span>:
+				area <span style="color: #666666">=</span> (<span style="color: #666666">-1.0</span>)<span style="color: #666666">*</span>area
+			listout <span style="color: #666666">=</span> [elabel, guass_x,guass_y,jacobian]
+	                <span style="color: #AA22FF">file</span><span style="color: #666666">.</span>write(<span style="color: #BB4444">&#39;</span><span style="color: #BB6688; font-weight: bold">%g</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&#39;</span> <span style="color: #666666">%</span> (listout[ii]))
+		<span style="color: #AA22FF; font-weight: bold">else</span>:
+			
+			klabel1 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>label
+			kcoor1 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">0</span>]<span style="color: #666666">.</span>coordinates
+	
+			klabel2 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">1</span>]<span style="color: #666666">.</span>label
+			kcoor2 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">1</span>]<span style="color: #666666">.</span>coordinates
+	
+			klabel3 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">2</span>]<span style="color: #666666">.</span>label
+			kcoor3 <span style="color: #666666">=</span> ktuple[<span style="color: #666666">2</span>]<span style="color: #666666">.</span>coordinates
+			
+	                zeta1, zeta2, zeta3<span style="color: #666666">=</span> (<span style="color: #666666">1.0/3.0</span>) , (<span style="color: #666666">1.0/3.0</span>), (<span style="color: #666666">1.0/3.0</span>)
+			X <span style="color: #666666">=</span> np<span style="color: #666666">.</span>array([[kcoor1[<span style="color: #666666">0</span>], kcoor2[<span style="color: #666666">0</span>], kcoor3[<span style="color: #666666">0</span>]]])
+			Y <span style="color: #666666">=</span> np<span style="color: #666666">.</span>transpose([[kcoor1[<span style="color: #666666">1</span>],kcoor2[<span style="color: #666666">1</span>],kcoor3[<span style="color: #666666">1</span>]]])
+			guass_x <span style="color: #666666">=</span> kcoor1[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>zeta1 <span style="color: #666666">+</span>kcoor2[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>zeta2 <span style="color: #666666">+</span>kcoor3[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>zeta3
+			guass_y <span style="color: #666666">=</span> kcoor1[<span style="color: #666666">1</span>]<span style="color: #666666">*</span>zeta1 <span style="color: #666666">+</span>kcoor2[<span style="color: #666666">1</span>]<span style="color: #666666">*</span>zeta2 <span style="color: #666666">+</span>kcoor3[<span style="color: #666666">1</span>]<span style="color: #666666">*</span>zeta3
+			jacobian <span style="color: #666666">=</span> (<span style="color: #666666">1.0/2.0</span>)<span style="color: #666666">*</span>((kcoor2[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor3[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor2[<span style="color: #666666">1</span>]<span style="color: #666666">*</span>kcoor3[<span style="color: #666666">0</span>])<span style="color: #666666">+</span>(kcoor3[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor1[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor1[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor3[<span style="color: #666666">1</span>]) <span style="color: #666666">+</span>(kcoor1[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor2[<span style="color: #666666">1</span>]<span style="color: #666666">-</span>kcoor2[<span style="color: #666666">0</span>]<span style="color: #666666">*</span>kcoor1[<span style="color: #666666">1</span>]))
+			area <span style="color: #666666">=</span> jacobian
 
 
+			listout <span style="color: #666666">=</span> [elabel, guass_x,guass_y,jacobian]
+			<span style="color: #AA22FF">file</span><span style="color: #666666">.</span>write(<span style="color: #BB4444">&#39;</span><span style="color: #BB6688; font-weight: bold">%g</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BB4444">&#39;</span> <span style="color: #666666">%</span> (listout[ii]))		
+	<span style="color: #AA22FF">file</span><span style="color: #666666">.</span>close()			
+</pre></td></tr></table></div>
+
+<button class="btn"><i class="fa fa-download"></i> Download This Script</button>
 
