@@ -20,12 +20,12 @@
 		<p>This python script can be run using any version of abaqus </p>
 		<p> The displayed python script can be use to apply periodic boundary conditions in 2D Recatangle <br>
 		 Representative Volume Element (RVE) of any size. One has to provide certain inputs,<br> 
-		1. model name of the RVE and 2. height and 3. width of RVE, 
-			In order to use this script to your FEA model, you need to change the <em>modelkey</em> variable name to 
+		1. model name of the RVE and 2. height and 3. width of RVE, <br>
+		In order to use this script to your FEA model, you need to change the <em>modelkey</em> variable name to 
 			a name of your model. 
 			
 		
-<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:scroll;width:800px;border:solid green;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:scroll;width:800px;height:1000px;border:solid green;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
  2
  3
  4
@@ -119,7 +119,7 @@
 <span style="color: #008800; font-style: italic"># PBC Constraints is generalised for any size of rve </span>
 <span style="color: #008800; font-style: italic"># You can change the model name : Model-1 to whatever the name of your model and same apply for Instance, 	</span>
 <span style="color: #008800; font-style: italic">#########################################</span>
-modelkey <span style="color: #666666">=</span><span style="color: #BB4444">&#39;Model-1-2-1&#39;</span>
+modelkey <span style="color: #666666">=</span><span style="color: #BB4444">&#39;Model-Name&#39;</span>
 instancekey <span style="color: #666666">=</span> mdb<span style="color: #666666">.</span>models[modelkey]<span style="color: #666666">.</span>rootAssembly<span style="color: #666666">.</span>instances<span style="color: #666666">.</span>keys()[<span style="color: #666666">0</span>]
 F<span style="color: #666666">=</span>mdb<span style="color: #666666">.</span>models[modelkey]<span style="color: #666666">.</span>rootAssembly<span style="color: #666666">.</span>instances[instancekey]<span style="color: #666666">.</span>nodes
 cornsetlist,setlabel<span style="color: #666666">=</span>[<span style="color: #BB4444">&#39;Bottemleft&#39;</span>,<span style="color: #BB4444">&#39;Bottemright&#39;</span>,<span style="color: #BB4444">&#39;Topright&#39;</span>,<span style="color: #BB4444">&#39;Topleft&#39;</span>],[<span style="color: #BB4444">&#39;setlabelH&#39;</span>,<span style="color: #BB4444">&#39;consH&#39;</span>,<span style="color: #BB4444">&#39;setlabelV&#39;</span>,<span style="color: #BB4444">&#39;consV&#39;</span>,<span style="color: #BB4444">&#39;corn&#39;</span>,<span style="color: #BB4444">&#39;U&#39;</span>,<span style="color: #BB4444">&#39;V&#39;</span>]
