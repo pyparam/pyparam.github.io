@@ -15,5 +15,93 @@
 			<li><a href="/usefullinks">Useful Links</a></li>
         	</ul>
 		</nav>
-<h1>This Page is in Under Construction</h1>
+<h1>Applying Periodic boundary conditions in 2D rectangle shape RVE in Abaqus/CAE using Python</h1>
+<code>############################################################################
+#Constraints for Periodic Boundary Conditions 
+# Note::: Do not modify it :
+# PBC Constraints is generalised for any size of rve 
+# You can change the model name : Model-1 to whatever the name of your model and same apply for Instance, 	
+#########################################
+modelkey ='Model-1-2-1'
+instancekey = mdb.models[modelkey].rootAssembly.instances.keys()[0]
+F=mdb.models[modelkey].rootAssembly.instances[instancekey].nodes
+cornsetlist,setlabel=['Bottemleft','Bottemright','Topright','Topleft'],['setlabelH','consH','setlabelV','consV','corn','U','V']
+a,noj  = getInput('length of RVE (x - coordinates)'),0
+b = getInput('height of RVE (y - coordinates)')
+a= float(a)
+b = float(b)
+for i in range(len(F)):
+  coor=F[i].coordinates
+  column = [0,a,b]
+  for k in column:
+	if coor[0]==k:
+		for m in column:
+			if coor[1]==m:
+			   #print(str(F[i].coordinates))
+			   cornseti=setlabel[4]+str(F[i].label)
+			   setsi=mdb.models[modelkey].rootAssembly.Set(cornseti, F[i:i+1])
+			   if coor[0]==0.0 and coor[1]==0.0:
+					cornsetlist[0]=cornseti
+			   elif coor[0]==a and coor[1]==0.0:
+					cornsetlist[1]=cornseti
+			   elif coor[0]==a and coor[1]==b:
+					cornsetlist[2]=cornseti
+			   elif coor[0]==0.0 and coor[1]==b:
+					cornsetlist[3]=cornseti
+if noj==0:
+   mdb.models[modelkey].Equation('corneq1',([1,cornsetlist[2],1],[-1,cornsetlist[1],1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
+   mdb.models[modelkey].Equation('corneq2',([1,cornsetlist[3],2],[-1,cornsetlist[0],2],[-1,cornsetlist[2],2],[1,cornsetlist[1],2]))
+if noj==1:
+   mdb.models[modelkey].Equation('corneq1',([1,cornsetlist[1],1],[-1,cornsetlist[2],1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
+   mdb.models[modelkey].Equation('corneq2',([1,cornsetlist[2],2],[-1,cornsetlist[1],2],[-1,cornsetlist[3],2],[1,cornsetlist[0],2]))
+if noj==2:
+  mdb.models[modelkey].Equation('corneq1',([1,cornsetlist[2],1],[-1,cornsetlist[1],1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
+  mdb.models[modelkey].Equation('corneq2',([1,cornsetlist[2],2],[-1,cornsetlist[1],2],[-1,cornsetlist[3],2],[1,cornsetlist[0],2]))
+column = [0,a,b]
+l1,l2,l3,l4=[],[],[],[] ###l1,l2,l3,l4 is list of node index position which situated at Bottem, Top, Right and Left respectively.
+for i in range(len(F)):
+	coor=F[i].coordinates
+	if coor[1]==0:
+		if coor[0]!=0 and coor[0]!=a:
+			l2.append(i);
+	if coor[1]==b:
+		if coor[0]!=0 and coor[0]!=a:
+			l1.append(i);
+	if coor[0]==0:
+		if coor[1]!=0 and coor[1]!=b:
+			l4.append(i);
+	if coor[0]==a:
+		if coor[1]!=0 and coor[1]!=b:
+			l3.append(i);
+
+for i in range(len(l1)):
+	coor1=F[l1[i]].coordinates
+	for j in range(len(l2)):
+		coor2=F[l2[j]].coordinates
+		if coor1[0] == coor2[0]:
+			setlabeli=setlabel[0]+str(F[l1[i]].label)
+			setlabelj=setlabel[0]+str(F[l2[j]].label)
+			cequation1=setlabel[1]+str(F[l1[i]].label)+setlabel[5]+str(F[l2[j]].label)
+			cequation2=setlabel[1]+str(F[l1[i]].label)+setlabel[6]+str(F[l2[j]].label)
+			setsi=mdb.models[modelkey].rootAssembly.Set(setlabeli, F[l1[i]:l1[i]+1])
+			setsj=mdb.models[modelkey].rootAssembly.Set(setlabelj, F[l2[j]:l2[j]+1])
+			mdb.models[modelkey].Equation(cequation1,([1,setlabeli,1],[-1,setlabelj,1],[-1,cornsetlist[3],1],[1,cornsetlist[0],1]))
+			mdb.models[modelkey].Equation(cequation2,([1,setlabeli,2],[-1,setlabelj,2],[-1,cornsetlist[3],2],[1,cornsetlist[0],2]))				
+for i in range(len(l3)):
+	coor1=F[l3[i]].coordinates
+	for j in range(len(l4)):
+		coor2=F[l4[j]].coordinates
+		if coor1[1] == coor2[1]:
+			setlabeli=setlabel[2]+str(F[l3[i]].label)
+			setlabelj=setlabel[2]+str(F[l4[j]].label)
+			cequation1=setlabel[3]+str(F[l3[i]].label)+setlabel[5]+str(F[l4[j]].label)
+			cequation2=setlabel[3]+str(F[l3[i]].label)+setlabel[6]+str(F[l4[j]].label)
+			setsi=mdb.models[modelkey].rootAssembly.Set(setlabeli, F[l3[i]:l3[i]+1])
+			setsj=mdb.models[modelkey].rootAssembly.Set(setlabelj, F[l4[j]:l4[j]+1])
+			mdb.models[modelkey].Equation(cequation1,([1,setlabeli,1],[-1,setlabelj,1],[-1,cornsetlist[1],1],[1,cornsetlist[0],1]))
+			mdb.models[modelkey].Equation(cequation2,([1,setlabeli,2],[-1,setlabelj,2],[-1,cornsetlist[1],2],[1,cornsetlist[0],2]))
+####################################################################
+#PBC Constraints end
+################################################################### </code>
+
 <p>For a time being you may want to take a look on some of mine Github repositories</p> 
