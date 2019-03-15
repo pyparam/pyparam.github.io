@@ -29,10 +29,11 @@
         }
         
         ul.nav {
-   		 list-style-type: none;
-   		 margin: 0;
-   		 padding: 0;
-   		 overflow: hidden;
+   	list-style-type: none;
+	position: sticky;
+   	margin: 0;
+   	padding: 0;
+   	overflow: hidden;
          color :LightBlue ;
          width: 1000px;
          font-family: Arial, Helvetica, sans-serif;
