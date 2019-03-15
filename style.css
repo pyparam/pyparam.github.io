@@ -39,7 +39,7 @@
          background-color:LightBlue;
 		}
 
-	.navbar-fixed-top {
+	ul.navbar-fixed-top {
   	position: fixed;
 	right: 0;
 	left: 0;
